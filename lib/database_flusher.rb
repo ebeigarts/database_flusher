@@ -23,7 +23,7 @@ module DatabaseFlusher
     end
 
     def started(event)
-      if event.command_name == :insert
+      if event.command_name == :insert || event.command_name == 'insert'.freeze
         collection = event.command['insert'.freeze]
         if collection
           @cleaner.collections << collection
