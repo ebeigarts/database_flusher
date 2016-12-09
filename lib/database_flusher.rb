@@ -53,7 +53,7 @@ module DatabaseFlusher
     def clean
       return unless strategy
       client = Mongoid::Clients.default
-      puts "Cleaning #{collections.inspect}"
+      # puts "Cleaning #{collections.inspect}"
       collections.each do |name|
         client[name].delete_many
       end
@@ -92,7 +92,7 @@ module DatabaseFlusher
     def clean
       return unless strategy
       connection = ActiveRecord::Base.connection
-      puts "Cleaning #{tables.inspect}"
+      # puts "Cleaning #{tables.inspect}"
       connection.disable_referential_integrity do
         stmts = tables.map { |t| "DELETE FROM #{connection.quote_table_name(t)}" }
         connection.execute stmts.join('; ')
