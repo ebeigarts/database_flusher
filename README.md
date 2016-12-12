@@ -20,6 +20,13 @@ database_flusher is a tiny and fast database cleaner inspired by [database_clean
 | ActiveRecord >= 4.2 | Yes      | Yes         |
 | Mongoid >= 5.0      | Yes      | No          |
 
+mysql2 needs `MULTI_STATEMENTS` flag to be set and requires active_record >= 5.0.0
+
+```yaml
+adapter: mysql2
+flags:
+  - MULTI_STATEMENTS
+```
 
 ## Installation
 
