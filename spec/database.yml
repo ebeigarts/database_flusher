@@ -1,0 +1,19 @@
+sqlite3:
+  adapter: sqlite3
+  database: ":memory:"
+
+mysql2:
+  adapter: mysql2
+  host: localhost
+  username: root
+  password:
+  database: database_flusher
+  flags:
+    - MULTI_STATEMENTS
+
+postgresql:
+  adapter: postgresql
+  host: localhost
+  username:
+  password:
+  database: database_flusher

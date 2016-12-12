@@ -1,8 +1,23 @@
 # DatabaseFlusher
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/database_flusher`. To experiment with that code, run `bin/console` for an interactive prompt.
+[![Build Status](https://travis-ci.org/ebeigarts/database_flusher.svg?branch=master)](https://travis-ci.org/ebeigarts/database_flusher)
 
-TODO: Delete this and the text above, and describe your gem
+database_flusher is a tiny and fast database cleaner inspired by [database_cleaner](https://github.com/DatabaseCleaner/database_cleaner) and [database_rewinder](https://github.com/amatsuda/database_rewinder).
+
+## Features
+
+* No monkey patching - uses `ActiveSupport::Notifications` and `Mongo::Monitoring::Global` to catch `INSERT` statements
+* Fast `:deletion` strategy that cleans only tables/collections where `INSERT` statements were performed
+* Faster `disable_referential_integrity` for PostgreSQL
+* Executes multiple `DELETE` statements as one query with ActiveRecord
+
+## Supported ORMs and strategies
+
+| ORM          | Deletion | Transaction |
+|:-------------|:---------|:------------|
+| ActiveRecord | Yes      | Yes         |
+| Mongoid      | Yes      | No          |
+
 
 ## Installation
 
@@ -14,28 +29,68 @@ gem 'database_flusher'
 
 And then execute:
 
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install database_flusher
+```bash
+$ bundle
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+RSpec:
 
-## Development
+```ruby
+RSpec.configure do |config|
+  config.use_transactional_fixtures = false
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+  config.before :suite do
+    DatabaseFlusher[:active_record].strategy = :transaction
+    DatabaseFlusher[:mongoid].strategy = :deletion
+  end
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+  config.before :each do
+    DatabaseFlusher[:active_record].strategy = :transaction
+  end
+
+  config.before :each, type: :feature do
+    if Capybara.current_driver != :rack_test
+      DatabaseFlusher[:active_record].strategy = :deletion
+    end
+  end
+
+  config.before :each do
+    DatabaseFlusher.start
+  end
+
+  config.append_after :each do
+    DatabaseFlusher.clean
+  end
+end
+```
+
+Cucumber:
+
+```ruby
+DatabaseFlusher[:active_record].strategy = :transaction
+DatabaseFlusher[:mongoid].strategy = :deletion
+
+Before('~@javascript') do
+  DatabaseFlusher[:active_record].strategy = :transaction
+  DatabaseFlusher.start
+end
+
+Before('@javascript') do
+  DatabaseFlusher[:active_record].strategy = :deletion
+  DatabaseFlusher.start
+end
+
+After do
+  DatabaseFlusher.clean
+end
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/database_flusher. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
+Bug reports and pull requests are welcome on GitHub at https://github.com/ebeigarts/database_flusher. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
