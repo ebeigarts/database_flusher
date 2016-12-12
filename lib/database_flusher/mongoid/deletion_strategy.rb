@@ -42,8 +42,8 @@ module DatabaseFlusher
       def clean
         return if collections.empty?
         # puts "Cleaning #{collections.inspect}"
+        client = ::Mongoid::Clients.default
         collections.each do |name|
-          client = ::Mongoid::Clients.default
           client[name].delete_many
         end
         collections.clear
