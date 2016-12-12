@@ -11,7 +11,7 @@ rvm:
 
 env:
   - DB=sqlite3
-  - DB=mysql
+  - DB=mysql2
   - DB=postgresql
 
 before_install: gem install bundler -v 1.13.3
