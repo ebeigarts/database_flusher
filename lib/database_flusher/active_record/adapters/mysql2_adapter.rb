@@ -13,12 +13,10 @@ module DatabaseFlusher
       private
 
       def execute_multi(sql)
-        connection.disable_referential_integrity do
-          _result = raw_connection.query sql
-          while raw_connection.next_result
-            # just to make sure that all queries are finished
-            _result = raw_connection.store_result
-          end
+        _result = raw_connection.query sql
+        while raw_connection.next_result
+          # just to make sure that all queries are finished
+          _result = raw_connection.store_result
         end
       end
     end
