@@ -11,13 +11,14 @@ database_flusher is a tiny and fast database cleaner inspired by [database_clean
 * Fast `:deletion` strategy that cleans only tables/collections where `INSERT` statements were performed
 * Faster `disable_referential_integrity` for PostgreSQL
 * Executes multiple `DELETE` statements as one query with ActiveRecord
+* Supports only one database for each ORM
 
 ## Supported ORMs and strategies
 
-| ORM          | Deletion | Transaction |
-|:-------------|:---------|:------------|
-| ActiveRecord | Yes      | Yes         |
-| Mongoid      | Yes      | No          |
+| ORM                 | Deletion | Transaction |
+|:--------------------|:---------|:------------|
+| ActiveRecord >= 4.2 | Yes      | Yes         |
+| Mongoid >= 5.0      | Yes      | No          |
 
 
 ## Installation
