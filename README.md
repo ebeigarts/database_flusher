@@ -1,6 +1,7 @@
 # DatabaseFlusher
 
 [![Build Status](https://travis-ci.org/ebeigarts/database_flusher.svg?branch=master)](https://travis-ci.org/ebeigarts/database_flusher)
+[![Code Climate](https://codeclimate.com/github/ebeigarts/database_flusher/badges/gpa.svg)](https://codeclimate.com/github/ebeigarts/database_flusher)
 
 database_flusher is a tiny and fast database cleaner inspired by [database_cleaner](https://github.com/DatabaseCleaner/database_cleaner) and [database_rewinder](https://github.com/amatsuda/database_rewinder).
 
