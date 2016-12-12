@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'database_flusher/active_record/adapters/abstract_adapter'
 require 'database_flusher/active_record/adapters/mysql2_adapter'
 require 'database_flusher/active_record/adapters/postgresql_adapter'

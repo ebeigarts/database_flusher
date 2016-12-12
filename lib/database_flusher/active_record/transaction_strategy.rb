@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module DatabaseFlusher
   module ActiveRecord
     class TransactionStrategy
