@@ -3,7 +3,7 @@ module DatabaseFlusher
     class PostgreSQLAdapter < AbstractAdapter
       private
 
-      def disable_referential_integrity(*tables, &block)
+      def disable_referential_integrity(*tables)
         begin
           execute(tables.collect { |name| "ALTER TABLE #{quote_table_name(name)} DISABLE TRIGGER ALL" }.join(";"))
         rescue
