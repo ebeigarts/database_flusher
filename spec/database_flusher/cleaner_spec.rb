@@ -3,7 +3,7 @@ require 'active_record'
 
 describe DatabaseFlusher::Cleaner do
   describe '#strategy=' do
-    it "sets strategy" do
+    it 'sets strategy' do
       DatabaseFlusher[:active_record].strategy = nil
       expect(DatabaseFlusher[:active_record].strategy).to be_kind_of(
         DatabaseFlusher::NullStrategy
@@ -18,7 +18,7 @@ describe DatabaseFlusher::Cleaner do
       )
     end
 
-    it "stops previous strategy" do
+    it 'stops previous strategy' do
       DatabaseFlusher[:active_record].strategy = :deletion
       strategy = DatabaseFlusher[:active_record].strategy
       expect(strategy).to receive(:stop)

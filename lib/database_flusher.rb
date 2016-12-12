@@ -20,10 +20,14 @@ module DatabaseFlusher
   end
 
   def start
-    cleaners.values.each { |cleaner| cleaner.start }
+    cleaners.values.each(&:start)
+  end
+
+  def stop
+    cleaners.values.each(&:stop)
   end
 
   def clean
-    cleaners.values.each { |cleaner| cleaner.clean }
+    cleaners.values.each(&:clean)
   end
 end

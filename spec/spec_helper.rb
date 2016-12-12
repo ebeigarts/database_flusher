@@ -1,4 +1,4 @@
-$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'database_flusher'
 require 'active_record'
 require 'active_record/tasks/database_tasks'
@@ -8,7 +8,7 @@ require 'byebug'
 ENV['DB'] ||= 'sqlite3'
 ActiveRecord::Tasks::DatabaseTasks.root = File.expand_path("../", __FILE__)
 ActiveRecord::Base.configurations = YAML.load_file(
-  File.expand_path("../database.yml", __FILE__)
+  File.expand_path('../database.yml', __FILE__)
 )
 ActiveRecord::Tasks::DatabaseTasks.drop_current ENV['DB']
 ActiveRecord::Tasks::DatabaseTasks.create_current ENV['DB']

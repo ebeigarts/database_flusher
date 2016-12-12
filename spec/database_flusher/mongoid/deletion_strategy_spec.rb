@@ -18,7 +18,7 @@ describe DatabaseFlusher::Mongoid::DeletionStrategy do
       expect(MongoidPost.count).to eq(0)
       expect(MongoidComment.count).to eq(0)
 
-      expect{ cleaner.stop }.to raise_error(NotImplementedError)
+      expect { cleaner.stop }.to raise_error(NotImplementedError)
     end
   end
 end

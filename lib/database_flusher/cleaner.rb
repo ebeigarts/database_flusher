@@ -10,7 +10,7 @@ module DatabaseFlusher
     def strategy=(name)
       strategy_changed = name != @strategy_name
 
-      @strategy.stop if strategy_changed && @strategy
+      stop if strategy_changed
 
       if name
         create_strategy(name) if strategy_changed
@@ -21,6 +21,18 @@ module DatabaseFlusher
 
     def clean_with(name)
       self.strategy = name
+      strategy.clean
+    end
+
+    def start
+      strategy.start
+    end
+
+    def stop
+      strategy.stop
+    end
+
+    def clean
       strategy.clean
     end
 
@@ -39,7 +51,7 @@ module DatabaseFlusher
     end
 
     def classify(name)
-      name.to_s.split('_').collect{ |w| w.capitalize }.join
+      name.to_s.split('_').collect(&:capitalize).join
     end
   end
 end
