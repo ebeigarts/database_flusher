@@ -9,6 +9,16 @@ describe DatabaseFlusher::ActiveRecord::DeletionStrategy do
     ActiveRecordComment.delete_all
   end
 
+  describe '#clean_all' do
+    it 'cleans the whole database' do
+      ActiveRecordPost.create!
+      ActiveRecordComment.create!
+      cleaner.clean_all
+      expect(ActiveRecordPost.count).to eq(0)
+      expect(ActiveRecordComment.count).to eq(0)
+    end
+  end
+
   describe '#clean' do
     it 'cleans the database' do
       begin

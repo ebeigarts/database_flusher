@@ -22,7 +22,7 @@ module DatabaseFlusher
 
     def clean_with(name)
       self.strategy = name
-      strategy.clean
+      strategy.clean_all
     end
 
     def start

@@ -96,6 +96,26 @@ After do
 end
 ```
 
+In case of unclean test shutdown, you can clean the whole database, using:
+
+```ruby
+RSpec.configure do |config|
+  config.before :suite do
+    if File.exists?('.~lock')
+      puts "Unclean shutdown, cleaning the whole database..."
+      DatabaseFlusher[:active_record].clean_with(:deletion)
+      DatabaseFlusher[:mongoid].clean_with(:deletion)
+    else
+      File.open('.~lock', 'a') {}
+    end
+  end
+
+  config.after :suite do
+    File.unlink('.~lock')
+  end
+end
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/ebeigarts/database_flusher. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.

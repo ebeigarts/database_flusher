@@ -3,6 +3,14 @@ require 'spec_helper'
 require 'active_record'
 
 describe DatabaseFlusher::Cleaner do
+  describe '#clean_with' do
+    it 'calls #clean_all' do
+      DatabaseFlusher[:active_record].strategy = :deletion
+      expect(DatabaseFlusher[:active_record].strategy).to receive(:clean_all)
+      DatabaseFlusher[:active_record].clean_with(:deletion)
+    end
+  end
+
   describe '#strategy=' do
     it 'sets strategy' do
       DatabaseFlusher[:active_record].strategy = nil

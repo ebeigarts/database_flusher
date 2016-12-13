@@ -9,6 +9,16 @@ describe DatabaseFlusher::Mongoid::DeletionStrategy do
     MongoidComment.delete_all
   end
 
+  describe '#clean_all' do
+    it 'cleans the whole database' do
+      MongoidPost.create!
+      MongoidComment.create!
+      cleaner.clean_all
+      expect(MongoidPost.count).to eq(0)
+      expect(MongoidComment.count).to eq(0)
+    end
+  end
+
   describe '#clean' do
     it 'cleans the database' do
       cleaner.start

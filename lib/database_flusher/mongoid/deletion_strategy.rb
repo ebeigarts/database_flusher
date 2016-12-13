@@ -10,11 +10,9 @@ module DatabaseFlusher
         end
 
         def started(event)
-          if event.command_name == :insert || event.command_name == 'insert'.freeze
-            collection = event.command['insert'.freeze]
-            if collection
-              @strategy.collections << collection
-            end
+          collection = event.command['insert'.freeze]
+          if collection
+            @strategy.collections << collection
           end
         end
 
@@ -29,7 +27,7 @@ module DatabaseFlusher
       end
 
       def start
-        @subscriber ||= Mongo::Monitoring::Global.subscribe(
+        @subscriber ||= client.subscribe(
           Mongo::Monitoring::COMMAND,
           Subscriber.new(self)
         )
@@ -42,11 +40,26 @@ module DatabaseFlusher
       def clean
         return if collections.empty?
         # puts "Cleaning #{collections.inspect}"
-        client = ::Mongoid::Clients.default
         collections.each do |name|
           client[name].delete_many
         end
         collections.clear
+      end
+
+      def clean_all
+        all_collections.each do |name|
+          client[name].delete_many
+        end
+      end
+
+      private
+
+      def client
+        @client ||= ::Mongoid::Clients.default
+      end
+
+      def all_collections
+        client.database.collections.collect { |c| c.namespace.split('.',2)[1] }
       end
     end
   end

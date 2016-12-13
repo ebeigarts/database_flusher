@@ -7,7 +7,7 @@ require 'database_flusher/active_record/adapters/sqlite_adapter'
 module DatabaseFlusher
   module ActiveRecord
     class DeletionStrategy
-      attr_reader :tables, :adapter
+      attr_reader :tables
 
       class Subscriber
         def initialize(strategy)
@@ -34,10 +34,6 @@ module DatabaseFlusher
           'sql.active_record',
           Subscriber.new(self)
         )
-        connection = ::ActiveRecord::Base.connection
-        @adapter = DatabaseFlusher::ActiveRecord.
-          const_get("#{connection.adapter_name}Adapter").
-          new(connection)
       end
 
       def stop
@@ -54,6 +50,31 @@ module DatabaseFlusher
         adapter.delete(*tables)
 
         tables.clear
+      end
+
+      def clean_all
+        adapter.delete(*all_tables)
+      end
+
+      private
+
+      def connection
+        @connection ||= ::ActiveRecord::Base.connection
+      end
+
+      def adapter
+        @adapter ||= DatabaseFlusher::ActiveRecord.
+          const_get("#{connection.adapter_name}Adapter").
+          new(connection)
+      end
+
+      def all_tables
+        tables = connection.tables
+        tables.reject do |t|
+          (t == ::ActiveRecord::Migrator.schema_migrations_table_name) ||
+          (::ActiveRecord::Base.respond_to?(:internal_metadata_table_name) &&
+            (t == ::ActiveRecord::Base.internal_metadata_table_name))
+        end
       end
     end
   end
