@@ -44,15 +44,27 @@ $ bundle
 
 ## Usage
 
-RSpec:
+### RSpec
 
 ```ruby
 RSpec.configure do |config|
   config.use_transactional_fixtures = false
 
   config.before :suite do
+    if File.exists?('.~lock')
+      puts "Unclean shutdown, cleaning the whole database..."
+      DatabaseFlusher[:active_record].clean_with(:deletion)
+      DatabaseFlusher[:mongoid].clean_with(:deletion)
+    else
+      File.open('.~lock', 'a') {}
+    end
+
     DatabaseFlusher[:active_record].strategy = :transaction
     DatabaseFlusher[:mongoid].strategy = :deletion
+  end
+
+  config.after :suite do
+    File.unlink('.~lock')
   end
 
   config.before :each do
@@ -75,44 +87,35 @@ RSpec.configure do |config|
 end
 ```
 
-Cucumber:
+### Cucumber
 
 ```ruby
+if File.exists?('.~lock')
+  puts "Unclean shutdown, cleaning the whole database..."
+  DatabaseFlusher[:active_record].clean_with(:deletion)
+  DatabaseFlusher[:mongoid].clean_with(:deletion)
+else
+  File.open('.~lock', 'a') {}
+end
+
+at_exit do
+  File.unlink('.~lock')
+end
+
 DatabaseFlusher[:active_record].strategy = :transaction
 DatabaseFlusher[:mongoid].strategy = :deletion
 
-Before('~@javascript') do
-  DatabaseFlusher[:active_record].strategy = :transaction
-  DatabaseFlusher.start
-end
-
-Before('@javascript') do
-  DatabaseFlusher[:active_record].strategy = :deletion
+Before do
+  if Capybara.current_driver == :rack_test
+    DatabaseFlusher[:active_record].strategy = :transaction
+  else
+    DatabaseFlusher[:active_record].strategy = :deletion
+  end
   DatabaseFlusher.start
 end
 
 After do
   DatabaseFlusher.clean
-end
-```
-
-In case of unclean test shutdown, you can clean the whole database, using:
-
-```ruby
-RSpec.configure do |config|
-  config.before :suite do
-    if File.exists?('.~lock')
-      puts "Unclean shutdown, cleaning the whole database..."
-      DatabaseFlusher[:active_record].clean_with(:deletion)
-      DatabaseFlusher[:mongoid].clean_with(:deletion)
-    else
-      File.open('.~lock', 'a') {}
-    end
-  end
-
-  config.after :suite do
-    File.unlink('.~lock')
-  end
 end
 ```
 
