@@ -7,7 +7,7 @@ database_flusher is a tiny and fast database cleaner inspired by [database_clean
 
 ## Features
 
-* No monkey patching - uses `ActiveSupport::Notifications` and `Mongo::Monitoring::Global` to catch `INSERT` statements
+* No monkey patching - uses `ActiveSupport::Notifications` and `Mongo::Monitoring` to catch `INSERT` statements
 * Fast `:deletion` strategy that cleans only tables/collections where `INSERT` statements were performed
 * Faster `disable_referential_integrity` for PostgreSQL
 * Executes multiple `DELETE` statements as one query with ActiveRecord
