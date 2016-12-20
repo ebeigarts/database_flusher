@@ -114,8 +114,13 @@ Before do
   DatabaseFlusher.start
 end
 
-After do
-  DatabaseFlusher.clean
+# Use Around hook to make sure it runs after capybara session reset.
+Around do |scenario, block|
+  begin
+    block.call
+  ensure
+    DatabaseFlusher.clean
+  end
 end
 ```
 
