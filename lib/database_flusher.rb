@@ -31,4 +31,11 @@ module DatabaseFlusher
   def clean
     cleaners.values.each(&:clean)
   end
+
+  def cleaning
+    start
+    yield
+  ensure
+    clean
+  end
 end

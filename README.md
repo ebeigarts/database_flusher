@@ -105,22 +105,14 @@ end
 DatabaseFlusher[:active_record].strategy = :transaction
 DatabaseFlusher[:mongoid].strategy = :deletion
 
-Before do
+# Use Around hook to make sure it runs after capybara session reset.
+Around do |scenario, block|
   if Capybara.current_driver == :rack_test
     DatabaseFlusher[:active_record].strategy = :transaction
   else
     DatabaseFlusher[:active_record].strategy = :deletion
   end
-  DatabaseFlusher.start
-end
-
-# Use Around hook to make sure it runs after capybara session reset.
-Around do |scenario, block|
-  begin
-    block.call
-  ensure
-    DatabaseFlusher.clean
-  end
+  DatabaseFlusher.cleaning(&block)
 end
 ```
 
