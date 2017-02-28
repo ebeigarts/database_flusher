@@ -38,5 +38,37 @@ describe DatabaseFlusher::ActiveRecord::DeletionStrategy do
       cleaner.clean
       expect(ActiveRecordPost.count).to eq(1)
     end
+
+    if ENV['DB'] == 'mysql2'
+      it 'cleans the database when table name is prefixed with schema' do
+        posts = Class.new(ActiveRecordPost) do
+          self.table_name = 'database_flusher.posts'
+        end
+        begin
+          cleaner.start
+          posts.create!
+          expect(cleaner.tables.to_a).to eq(['database_flusher.posts'])
+        ensure
+          cleaner.clean
+        end
+        expect(posts.count).to eq(0)
+      end
+    end
+
+    if ENV['DB'] == 'postgresql'
+      it 'cleans the database when table name is prefixed with schema' do
+        posts = Class.new(ActiveRecordPost) do
+          self.table_name = 'public.posts'
+        end
+        begin
+          cleaner.start
+          posts.create!
+          expect(cleaner.tables.to_a).to eq(['public.posts'])
+        ensure
+          cleaner.clean
+        end
+        expect(posts.count).to eq(0)
+      end
+    end
   end
 end
