@@ -10,16 +10,31 @@ module DatabaseFlusher
       attr_reader :tables
 
       class Subscriber
+        # INSERT [IGNORE] [INTO] schema_name.table_name
+        PATTERN = %r{
+          \A\s*
+          INSERT
+          (?:\s+IGNORE)?
+          (?:\s+INTO)?
+          \s+
+          (?:[`"]?([^.\s`"]+)[`"]?\.)? # schema
+          (?:[`"]?([^.\s`"]+)[`"]?)    # table
+        }xi
+
         def initialize(strategy)
           @strategy = strategy
         end
 
         def call(_, _, _, _, payload)
           sql = payload[:sql]
-          match = sql.match(/\A\s*INSERT(?:\s+IGNORE)?(?:\s+INTO)?\s+(?:\.*[`"]?([^.\s`"]+)[`"]?)*/i)
+          match = sql.match(PATTERN)
           return unless match
-          table = match[1]
+          table  = match[2]
           if table
+            schema = match[1]
+            if schema
+              table = "#{schema}.#{table}"
+            end
             @strategy.tables << table
           end
         end
