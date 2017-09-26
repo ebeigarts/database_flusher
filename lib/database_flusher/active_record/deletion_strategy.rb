@@ -86,9 +86,11 @@ module DatabaseFlusher
       def all_tables
         # NOTE connection.tables warns on AR 5 with some adapters
         tables = ActiveSupport::Deprecation.silence { connection.tables }
+        migrations_table = Rails::VERSION::MAJOR >= 5 ? ::ActiveRecord::SchemaMigration.table_name : ::ActiveRecord::Migrator.schema_migrations_table_name
+
         tables.reject do |t|
-          (t == ::ActiveRecord::Migrator.schema_migrations_table_name) ||
-          (::ActiveRecord::Base.respond_to?(:internal_metadata_table_name) &&
+          (t == migrations_table) ||
+            (::ActiveRecord::Base.respond_to?(:internal_metadata_table_name) &&
             (t == ::ActiveRecord::Base.internal_metadata_table_name))
         end
       end
